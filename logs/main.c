@@ -5,7 +5,8 @@ int main(int c,char *v[]){
 	now(datetime);
 
 	logger_appender_t appender;
+	appender.lvl = Debug;
 	appender.out_stream = stdout;
-	LOG_DEBUG(appender,"hello %s\n","world")
+	LOG_DEBUG(appender,"hello  %s\n","world")
 	return 0;
 }
