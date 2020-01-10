@@ -14,4 +14,5 @@
 #define DATETIME_INDEX_MILLIS 6
 
 void now(int* buffer);
+void now_with_millis(int* buffer);
 #endif
