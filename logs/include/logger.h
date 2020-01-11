@@ -7,14 +7,30 @@
 #include "datetimeutil.h"
 typedef enum {Debug,Info,Warn,Error} log_level_t;
 
+#define LOG_MODIFIER_DATE 1
+#define LOG_MODIFIER_TIME 2
+#define LOG_MODIFIER_MILLIS 4
+#define LOG_MODIFIER_LEVEL 8
+#define LOG_MODIFIER_THREAD 16
+#define LOG_MODIFIER_FILE 32
+#define LOG_MODIFIER_FUNC 64
+#define LOG_MODIFIER_LINE 128
+
 typedef struct {
-	FILE* out_stream;
+	int modifier;
 	log_level_t lvl;
+	int current_starttime[7];
+
+	FILE* out_stream;
+
+	char* dir_name;
+	char* log_name;
+
 } logger_appender_t;
 
 
-logger_appender_t* new_appender();
-void distroy_appender();
+logger_appender_t* new_appender(char* dir,char* name,log_level_t filter_lvl,int log_modifier);
+void distroy_appender(logger_appender_t* appender_ptr);
 
 void append(logger_appender_t* ptr,const char* modifier ,const char* content);
 

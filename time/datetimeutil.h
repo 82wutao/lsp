@@ -15,4 +15,12 @@
 
 void now(int* buffer);
 void now_with_millis(int* buffer);
+
+int diff_between_millis(int* buffer1,int* buffer2);
+int diff_between_seconds(int* buffer1,int* buffer2);
+int diff_between_minutes(int* buffer1,int* buffer2);
+int diff_between_hours(int* buffer1,int* buffer2);
+int diff_between_days(int* buffer1,int* buffer2);
+int diff_between_monthes(int* buffer1,int* buffer2);
+int diff_between_years(int* buffer1,int* buffer2);
 #endif
