@@ -18,14 +18,14 @@ typedef enum {Debug,Info,Warn,Error} log_level_t;
 #define LOG_MODIFIER_LINE 128
 
 typedef struct {
-	int modifier;
-	log_level_t lvl;
-	int current_starttime[7];
+    int modifier;
+    log_level_t lvl;
+    int current_starttime[7];
 
-	FILE* out_stream;
+    FILE* out_stream;
 
-	char* dir_name;
-	char* log_name;
+    char* dir_name;
+    char* log_name;
 
 } logger_appender_t;
 
@@ -33,7 +33,7 @@ typedef struct {
 logger_appender_t* new_appender(char* dir,char* name,log_level_t filter_lvl,int log_modifier);
 void distroy_appender(logger_appender_t* appender_ptr);
 
-void append(logger_appender_t* ptr,const char* modifier ,const char* content);
+void append(logger_appender_t* ptr,const char* modifier,const char* content);
 
 void archive_appender();
 void open_appender();
@@ -42,17 +42,24 @@ void open_appender();
 { \
 timestamp_t time_buff; \
 now_with_millis(&time_buff); \
-char current_thread_name[16]; \
-pthread_t current_thread = pthread_self(); \
-pthread_getname_np(current_thread,current_thread_name,16); \
 char modifier_buff[256]; \
+int len= 0; \
+if(appender.modifier & LOG_MODIFIER_DATE){len +=snprintf(modifier_buff+len,255-len,"%04d-%02d-%02d ",time_buff.year,time_buff.month,time_buff.day_month);} \
+if(appender.modifier & LOG_MODIFIER_TIME){len +=snprintf(modifier_buff+len,255-len,"%02d:%02d:%02d ",time_buff.hour,time_buff.minute,time_buff.second);} \
+if(appender.modifier & LOG_MODIFIER_MILLIS){len = (len==0?len:len-1);len +=snprintf(modifier_buff+len,255-len,".%03d ",time_buff.millis);} \
+if(appender.modifier & LOG_MODIFIER_LEVEL){len +=snprintf(modifier_buff+len,255-len,"[%s] ",#log_lvl);} \
+if(appender.modifier & LOG_MODIFIER_FILE){len +=snprintf(modifier_buff+len,255-len,"[%s] ",__FILE__);} \
+if(appender.modifier & LOG_MODIFIER_FUNC){len +=snprintf(modifier_buff+len,255-len,"[%s] ",__FUNCTION__);} \
+if(appender.modifier & LOG_MODIFIER_LINE){len +=snprintf(modifier_buff+len,255-len,"[%d] ",__LINE__);} \
+if(appender.modifier & LOG_MODIFIER_THREAD){ \
+    char current_thread_name[16]; \
+    pthread_t current_thread = pthread_self(); \
+    pthread_getname_np(current_thread,current_thread_name,16); \
+    len +=snprintf(modifier_buff+len,255-len,"[%s] ",current_thread_name); \
+} \
 char content_buff[256]; \
-snprintf(modifier_buff,255,"%d-%d-%d %d:%d:%d.%d [ %s ] %s %d [t_name:%s] ", \
-time_buff.year,time_buff.month,time_buff.day_month,time_buff.hour,time_buff.minute,time_buff.second,time_buff.millis, \
-#log_lvl,__FILE__,__LINE__,current_thread_name); \
 snprintf(content_buff,255,fmt,args); \
 append(&appender,modifier_buff,content_buff); \
- \
 }
 
 #define LOG_DEBUG(appender,fmt,args...) \
