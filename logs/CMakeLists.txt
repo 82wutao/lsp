@@ -54,14 +54,12 @@ if(LIB_PTHREAD_FOUND)
   message(STATUS "found libpthread")
 endif()
 
-include_directories(${PROJECT_SOURCE_DIR})
-include_directories(${PROJECT_DIR}/include)
+include_directories(${PROJECT_SOURCE_DIR}/src)
 
 string(TOUPPER ${CMAKE_BUILD_TYPE} BUILD_TYPE)
 message(STATUS "C_FLAGS = " ${CMAKE_C_FLAGS} " " ${CMAKE_C_FLAGS_${BUILD_TYPE}})
 
-add_subdirectory(src/datetime/)
-add_subdirectory(src/logs)
+add_subdirectory(src)
 
 if(LSP_BUILD_EXAMPLES)
 #  add_subdirectory(contrib)
