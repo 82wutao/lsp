@@ -144,7 +144,7 @@ pid_t exec_subprocess(context_t* context,command_t* user_command,int pipe_in,int
 					break;
 				}
 				int open_bits = O_WRONLY|O_CREAT | O_TRUNC;
-				if(user_command->flag_bits & COMMAND_FLAG_REDIRECT_OUT_APPEND){
+				if(user_command->flag_bits & COMMAND_FLAG_REDIRECT_ERR_APPEND){
 					open_bits = open_bits | O_APPEND;
 					open_bits = open_bits & (~O_TRUNC);
 				}
