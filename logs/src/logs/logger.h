@@ -20,23 +20,24 @@ typedef enum {Debug,Info,Warn,Error} log_level_t;
 typedef struct {
     int modifier;
     log_level_t lvl;
-    int current_starttime[7];
+    timestamp_t current_starttime;
 
     FILE* out_stream;
 
     char* dir_name;
     char* log_name;
-
 } logger_appender_t;
 
 
-logger_appender_t* new_appender(char* dir,char* name,log_level_t filter_lvl,int log_modifier);
-void distroy_appender(logger_appender_t* appender_ptr);
+int appender_init(logger_appender_t* appender_ptr, char* dir,char* name,log_level_t filter_lvl,int log_modifier);
+logger_appender_t* appender_new(char* dir,char* name,log_level_t filter_lvl,int log_modifier);
 
-void append(logger_appender_t* ptr,const char* modifier,const char* content);
+void appender_destroy(logger_appender_t* appender_ptr);
 
-void archive_appender();
-void open_appender();
+void appender_append(logger_appender_t* appender_ptr,const char* modifier,const char* content);
+
+void appender_archive(logger_appender_t* appender_ptr);
+void appende_open(logger_appender_t* appender_ptr);
 
 #define __APPEND(log_lvl,fmt,args... ) \
 { \
@@ -59,7 +60,7 @@ if(appender.modifier & LOG_MODIFIER_THREAD){ \
 } \
 char content_buff[256]; \
 snprintf(content_buff,255,fmt,args); \
-append(&appender,modifier_buff,content_buff); \
+appender_append(&appender,modifier_buff,content_buff); \
 }
 
 #define LOG_DEBUG(appender,fmt,args...) \

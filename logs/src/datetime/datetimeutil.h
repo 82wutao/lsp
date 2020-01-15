@@ -13,6 +13,8 @@
 #define DATETIME_INDEX_SECOND 5
 #define DATETIME_INDEX_MILLIS 6
 
+typedef enum {MILLIS,SECOND,MINUTE,HOUR,DAY,MONTH,YEAR} timeunit_t;
+
 typedef struct {
     int year;
     int month;
@@ -26,6 +28,7 @@ typedef struct {
 
 void now(timestamp_t* buffer);
 void now_with_millis(timestamp_t* buffer);
+void zero_timestamp(timestamp_t* buffer);
 
 #define is_leap(year) ((year % 4 == 0 && year / 100 != 0) || (year % 400 == 0))
     

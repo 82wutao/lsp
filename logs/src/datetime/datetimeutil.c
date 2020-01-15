@@ -43,6 +43,21 @@ void now_with_millis (timestamp_t* buffer ) {
     buffer->millis=sms_v.tv_usec/1000;
 }
 
+void zero_timestamp(timestamp_t* buffer){
+    if ( !buffer ) {
+        return;
+    }
+
+    buffer->year = 0;
+    buffer->month = 0;
+    buffer->day_month= 0;
+    buffer->day_year=0;
+    buffer->hour=0;
+    buffer->minute=0;
+    buffer->second	=0;
+    buffer->millis=0;
+}
+
 unsigned long millis_between(timestamp_t* buffer1,timestamp_t* buffer2){
     unsigned long ms1=0;
     unsigned long ms2=0;
