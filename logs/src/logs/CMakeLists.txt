@@ -12,7 +12,7 @@ target_link_libraries(logger pthread)
 install(TARGETS logger DESTINATION lib)
 #install(TARGETS muduo_base_cpp11 DESTINATION lib)
 
-file(GLOB HEADERS "logger.h")
-install(FILES ${HEADERS} DESTINATION include/logger)
 
+file(GLOB HEADERS "logger.h")
+install(FILES ${HEADERS} DESTINATION include/logs)
 

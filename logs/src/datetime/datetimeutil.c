@@ -1,5 +1,8 @@
 #include "datetime/datetimeutil.h"
 
+
+static int days_permonth[]={0,31,28,31,30,31,30,31,31,30,31,30,31};
+
 void now(timestamp_t* buffer){
     if ( !buffer ) {
         return;
@@ -103,18 +106,28 @@ int days_between(timestamp_t* buffer1,timestamp_t* buffer2){
     int diff = years_between(buffer1,buffer2);
     if(diff==0){return d1 - d2;}
     
-    int dict = diff<0?-1:1;
-    int day_sum = 0;
-    for(int i=0;i<(diff * dict);i++){
-        int year = buffer1->year + i;
-        if(is_leap(year)){
-            day_sum = day_sum + dict * 366;
-        }else{
-            day_sum = day_sum + dict * 365;            
+    if(diff<0){
+        int days = 0;
+        for(int i=0;i<diff*-1;i++){
+            int year = buffer1->year + i;
+            if(is_leap(year)){
+            days +=366;
+            }else{
+            days +=365;
+            }
         }
+        return d1 - d2+days;
     }
-    
-    return day_sum + d1 - d2;
+        int days = 0;
+        for(int i=0;i<diff*-1;i++){
+            int year = buffer2->year + i;
+            if(is_leap(year)){
+            days +=366;
+            }else{
+            days +=365;
+            }
+        }
+        return d2 - d1+days;
 }
 int monthes_between(timestamp_t* buffer1,timestamp_t* buffer2){
     int m1=0;
@@ -134,6 +147,114 @@ int years_between(timestamp_t* buffer1,timestamp_t* buffer2){
     return y1 - y2;
 }
 
+void timestamp_add(timestamp_t* src,int v,timeunit_t unit,timestamp_t* dest){
+    if(!src || !dest){return ;}
 
+    if(src !=dest){
+        dest->year = src->year;
+        dest->month = src->month;
+        dest->day_month = src->day_month;
+        dest->day_year = src->day_year;
+        dest->hour = src->hour;
+        dest->minute = src->minute;
+        dest->second = src->second;
+        dest->millis = src->millis;
+    }
 
+    if(unit==MILLIS){
+        int tmp_v = dest->millis + v;
+        int times = tmp_v / 1000;times = tmp_v<0? times-1 : times;
+        int left = tmp_v % 1000;
+        if (left < 0){
+            left = left + 1000;
+        }
+        dest->millis = left;
+        if(times==0){return ;}
+        v = times;unit = SECOND;
+    }
+
+    if(unit==SECOND){
+        int tmp_v = dest->second + v;
+        int times = tmp_v / 60;times =tmp_v<0? times-1 : times;
+        int left = tmp_v % 60;
+        if (left < 0){
+            left = left + 60;
+        }
+        dest->second = left;
+        if(times==0){return ;}
+        v = times;unit = MINUTE;
+    }
+    if(unit==MINUTE){
+        int tmp_v = dest->minute + v;
+        int times = tmp_v / 60;        times = tmp_v<0? times-1 : times;
+        int left = tmp_v % 60;
+        if (left < 0){
+            left = left + 60;
+        }
+        dest->minute = left;
+        if(times==0){return ;}
+        v = times;unit = HOUR;
+    }
+    if(unit==HOUR){
+        int tmp_v = dest->hour + v;
+        int times = tmp_v / 24;        times = tmp_v<0? times-1 : times;
+        int left = tmp_v % 24;
+        if (left < 0){
+            left = left + 24;
+        }
+        dest->hour = left;
+        if(times==0){return ;}
+        v = times;unit = DAY;
+    }
+    if(unit==DAY){
+        dest->day_month= dest->day_month + v;
+    }
+    if(unit==MONTH){
+        int tmp_v = (dest->month-1) + v;
+        int times = tmp_v / 12;        times = tmp_v<0? times-1 : times;
+        int left = tmp_v % 12;
+        if (left < 0){
+            left = left + 12;
+        }
+        dest->month = left + 1;
+        dest->day_month = dest->day_month + v<0?1:-1;
+        if(times==0){return ;}
+        v = times;unit = YEAR;
+    }
+    if(unit==YEAR){
+        dest->year = dest->year + v;
+        dest->day_month = dest->day_month + v<0?1:-1;
+    }
+
+    int direct = v<0?-1:1;
+         int c_m = dest->month;
+        int c_y = dest->year;
+        int c_d_m = dest->day_month;
+    while(1){
+        int max_month = days_permonth[c_m];
+        if(c_d_m * direct > max_month){
+            c_d_m = c_d_m - max_month*direct;
+            c_m = c_m + direct;
+        }else{
+            if(c_d_m<0){c_d_m = c_d_m+max_month;}
+            break;
+
+        }
+        if(c_m==0){c_m=12;c_y--;}
+        if(c_m==13){c_m=1;c_y++;}
+    }
+    dest->year = c_y;
+    dest->month = c_m;
+    dest->day_month=c_d_m;
+
+    int c_d_y =0;
+    for(int i=1;i<c_m;i++){
+        int days = days_permonth[i];
+        c_d_y +=days;
+    }
+    dest->day_year = c_d_y+c_d_m;
+
+}
+
+//  ______|______|_______
 

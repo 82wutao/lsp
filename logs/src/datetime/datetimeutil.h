@@ -39,4 +39,6 @@ int hours_between(timestamp_t* buffer1,timestamp_t* buffer2);
 int days_between(timestamp_t* buffer1,timestamp_t* buffer2);
 int monthes_between(timestamp_t* buffer1,timestamp_t* buffer2);
 int years_between(timestamp_t* buffer1,timestamp_t* buffer2);
+
+void timestamp_add(timestamp_t* src,int v,timeunit_t unit,timestamp_t* dest);
 #endif
